@@ -13,23 +13,32 @@
 
 <script>
 
-const encryptedText="wy4ECQMIS1wND+JaSnDgWTLcJ0Jp1G+Jlj9wx7N3oaBG17dB9MwxaJZEciLCChpp0sA9AZNID3sn6OmnjmuML16mYBLgG4qqovXUEfqNTx4tqvSOA+pvZX0Xo4+pEln8XdDyxL6cBI2IAaugaA0yhF+lcKg26I72oNpwo0K5bQEFnKhUB9kwlPPvBQpdjkoZzM+ZZTcZ8DXdFGS9VEg2v/lh66pjeR2EIiAnhN1hpifYvaS08i2nAX4Uj99mERNohjWeIYcJLAFIgLckNcp15M5hCYW9Sjao4XkVCiKGZPp1VinX3tbknV/KyDA+7pCS7t1LJQtby4pYcYH0N0ryXrs5MH8dLYXwL94GiAKdT86F5Wz2pli3uhDTmMI4X9D40CR8nwZipmQAtekf0thRDg==";
+const encryptedText="wy4ECQMI+iNtyCui97PgWS5KQrOLTcKAaMTIapH37Q7Oa/6h2uQEnYr74YAmKeKW0ncBO55U+Q73CKwx4/sBiI99xO0Uq7BY2sI3i6RVllIlZPIcBpYfO0RGodpuskhPO4nXB8VWJ0TaYJ3ZD3FVMklvieLTVkI8nd5CBrB/Ethk+ttiLosO5FxTiOsaxntcACI6DOjQe8qc1GVTiJ1k9LnvxRB1ms5GJQ==";
 
-const input = document.getElementById("passwordInput");
-input.focus();
-input.select();
-input.addEventListener("keyup", event => {
-  if (event.keyCode === 13) document.getElementById("unlock").click();
-}); 
+
+init()
+
+function init(){
+  const input = document.getElementById("passwordInput");
+  input.focus();
+  input.select();
+  input.addEventListener("keyup", event => {
+    if (event.keyCode === 13) document.getElementById("unlock").click();
+  });
+}
 
 function unlockButtonOnClick(){
   document.getElementById("text").innerHTML = "loading";
   decrypt(encryptedText, document.getElementById("passwordInput").value)
   .then((plaintext)=>{
-    evalHtml(plaintext)
+    console.log(plaintext)
+    document.getElementById("text").innerHTML = "";
+    eval(plaintext)
+    //evalHtml(plaintext)
+    
   })
   .catch((err)=>{
-    document.getElementById("text").innerHTML = "Wrong password"  
+    document.getElementById("text").innerHTML = "Wrong password"
   });
 }
 
@@ -37,14 +46,20 @@ async function decrypt(text, password){
   const pwUIntArray = Uint8Array.from(atob(text), c => c.charCodeAt(0))
   const options = {
     message: await openpgp.message.read(pwUIntArray), // parse encrypted bytes
-    passwords: [password],                  // decrypt with password
-    format: 'utf8'                          // output as Uint8Array
+    passwords: [password],                            // decrypt with password
+    format: 'utf8'
   };
   
   return openpgp.decrypt(options).then(function(plaintext) {
       return plaintext.data
   })
 }
+
+
+
+
+
+
 
 function evalHtml(htmltext){
   const htmlInfo = parseHTML(htmltext)
